@@ -14,4 +14,21 @@ type Detection struct {
 	Lat         string   `json:"lat"`
 	Lng         string   `json:"lng"`
 	TriggerType []string `json:"trigger"`
+	Radius      string   `json:"radius"`
+}
+
+type Object struct {
+	Type        string    `json:"type"`
+	Coordinates []float64 `json:"coordinates"`
+}
+
+type HookRequest struct {
+	Command string  `json:"command"`
+	Group   string  `json:"group"`
+	Detect  string  `json:"detect"`
+	Hook    string  `json:"hook"`
+	Key     string  `json:"key"`
+	Time    string  `json:"time"`
+	ID      string  `json:"id"`
+	Object  Object  `json:"object"`
 }

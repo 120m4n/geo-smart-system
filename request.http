@@ -1,0 +1,30 @@
+@server=http://127.0.0.1:8080
+
+### get unique id
+# @name requestID
+GET {{server}}/id/get/unique HTTP/1.1
+### set unique id
+@unique_id={{requestID.response.body.$.id}}
+
+###
+POST {{server}}/point/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": "{{unique_id}}",
+    "type": "user",
+    "lat" : "7.1131308",
+    "lng" : "-73.119994194"
+}
+
+### set detection 
+POST {{server}}/detection/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "type": "user",
+    "lat" : "7.1308",
+    "lng" : "-73.119994194",
+    "trigger" : ["enter", "exit"],
+    "radius" : "100"
+}

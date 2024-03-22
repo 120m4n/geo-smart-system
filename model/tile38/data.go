@@ -11,6 +11,7 @@ type Data struct {
 	Object []Object `json:"data"`
 }
 
+
 func FromScan(client *redis.Client, name string) (Data, error) {
 	var tile38Data Data
 	var err error

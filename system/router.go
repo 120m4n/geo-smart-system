@@ -1,20 +1,23 @@
 package system
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/gin-contrib/sse"
+	"log"
+	"net/http"
+	"strings"
+
+	// "github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
 	"github.com/supanadit/geo-smart-system/model"
 	"github.com/supanadit/geo-smart-system/model/tile38"
-	"log"
-	"net/http"
-	"strings"
+	"github.com/supanadit/geo-smart-system/server"
 )
 
-func Router(r *gin.Engine, client *redis.Client) {
+func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 	r.GET("/id/get/unique", func(c *gin.Context) {
 		id := xid.New()
 		c.JSON(200, gin.H{"id": id.String()})
@@ -60,18 +63,7 @@ func Router(r *gin.Engine, client *redis.Client) {
 		c.JSON(http.StatusOK, data)
 	})
 
-	r.GET("/point/get/stream", func(c *gin.Context) {
-		writer := c.Writer
-		writer.Header().Set("Content-Type", "text/event-stream")
-		writer.Header().Set("Cache-Control", "no-cache")
-		writer.Header().Set("Connection", "keep-alive")
-		data, _ := tile38.FromScan(client, "user")
-		_ = sse.Encode(writer, sse.Event{
-			Event: "message",
-			Data:  data,
-		})
-	})
-
+	
 	r.POST("/detection/set", func(c *gin.Context) {
 		var detection model.Detection
 		err := c.BindJSON(&detection)
@@ -84,7 +76,7 @@ func Router(r *gin.Engine, client *redis.Client) {
 			status = gin.H{"status": "Please include trigger type such as 'enter','cross','exit','inside' or 'outside'"}
 			httpStatus = http.StatusBadRequest
 		} else {
-			client.Do("SETHOOK", hookID, hookURL, "NEARBY", detection.Type, "FENCE", "DETECT", trigger, "COMMANDS", "set", "POINT", detection.Lat, detection.Lng)
+			client.Do("SETHOOK", hookID, hookURL, "NEARBY", detection.Type, "FENCE", "DETECT", trigger, "POINT", detection.Lat, detection.Lng, detection.Radius)
 			if err != nil {
 				status = gin.H{"status": "Unknown Error"}
 				httpStatus = http.StatusInternalServerError
@@ -97,12 +89,38 @@ func Router(r *gin.Engine, client *redis.Client) {
 		c.JSON(httpStatus, status)
 	})
 
-	r.GET("/detection/call", func(c *gin.Context) {
+	// r.GET("/detection/call", func(c *gin.Context) {
+	// 	hookID := c.Query("hook")
+	// 	if hookID == "" {
+	// 		c.JSON(http.StatusBadRequest, gin.H{"status": "Wrong Request"})
+	// 	} else {
+	// 		client.Do("DELHOOK", hookID)
+	// 		c.JSON(http.StatusOK, gin.H{"status": "OK"})
+	// 	}
+	// })
+
+	r.POST("/detection/call", func(c *gin.Context) {
+		var request model.HookRequest
 		hookID := c.Query("hook")
 		if hookID == "" {
 			c.JSON(http.StatusBadRequest, gin.H{"status": "Wrong Request"})
 		} else {
-			client.Do("DELHOOK", hookID)
+			if err := c.ShouldBindJSON(&request); err != nil {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+
+			requestJson, err := json.Marshal(request)
+			if err != nil {
+				log.Print("Failed to convert request to JSON")
+				return
+			}
+			// log.Print(string(requestJson))
+			// Broadcast requestJson to all clients
+			event.Message <- string(requestJson)
+
 			c.JSON(http.StatusOK, gin.H{"status": "OK"})
 		}
 	})
