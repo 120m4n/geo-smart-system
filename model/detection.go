@@ -17,6 +17,14 @@ type Detection struct {
 	Radius      string   `json:"radius"`
 }
 
+
+type Geofence struct {
+	Type		string   `json:"type" binding:"required"`
+	FenceId     string   `json:"fence_id" binding:"required"`
+	TriggerType []string `json:"trigger" binding:"required"`
+	GeojsonStr  string   `json:"geojson" binding:"required"`
+}
+
 type Object struct {
 	Type        string    `json:"type"`
 	Coordinates []float64 `json:"coordinates"`

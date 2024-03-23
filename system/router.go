@@ -76,6 +76,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 			status = gin.H{"status": "Please include trigger type such as 'enter','cross','exit','inside' or 'outside'"}
 			httpStatus = http.StatusBadRequest
 		} else {
+			
 			client.Do("SETHOOK", hookID, hookURL, "NEARBY", detection.Type, "FENCE", "DETECT", trigger, "POINT", detection.Lat, detection.Lng, detection.Radius)
 			if err != nil {
 				status = gin.H{"status": "Unknown Error"}
@@ -84,6 +85,35 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 				status = gin.H{"status": "Ok"}
 				httpStatus = http.StatusOK
 			}
+		}
+		c.Writer.Header().Set("Content-Type", "application/json")
+		c.JSON(httpStatus, status)
+	})
+
+	r.POST("/geofence/set", func(c *gin.Context) {
+		var geofence model.Geofence
+		if err := c.ShouldBindJSON(&geofence); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),})
+			return
+		}
+		hookID := "HOOK-" + xid.New().String()
+		hookURL := GetTile38HookURL(hookID)
+		trigger := strings.Join(geofence.TriggerType, ",")
+		var status map[string]interface{}
+		var httpStatus int
+		if trigger == "" {
+			status = gin.H{"status": "Please include trigger type such as 'enter','cross','exit','inside' or 'outside'"}
+			httpStatus = http.StatusBadRequest
+		} else {
+			client.Do("SET", "HOOKS", geofence.FenceId, "OBJECT", geofence.GeojsonStr)
+			client.Do("SETHOOK", hookID, hookURL, "WITHIN", geofence.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", geofence.FenceId)
+			// if err != nil {
+			// 	status = gin.H{"status": "Unknown Error"}
+			// 	httpStatus = http.StatusInternalServerError
+			// } else {
+				status = gin.H{"status": "Ok", "hook": hookID}
+				httpStatus = http.StatusOK
+			// }
 		}
 		c.Writer.Header().Set("Content-Type", "application/json")
 		c.JSON(httpStatus, status)

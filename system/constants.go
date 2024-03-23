@@ -7,7 +7,7 @@ const (
 	Tile38Address = "127.0.0.1"
 	Tile38Port    = "9851"
 	ServerAddress = "192.168.1.12"
-	ServerPort = "8080"
+	ServerPort 	  = "8080"
 )
 
 func GetTile38ConnectionAddress() string {

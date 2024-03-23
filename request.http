@@ -6,15 +6,35 @@ GET {{server}}/id/get/unique HTTP/1.1
 ### set unique id
 @unique_id={{requestID.response.body.$.id}}
 
-###
+### user in
 POST {{server}}/point/set HTTP/1.1
 Content-Type: application/json
 
 {
     "id": "{{unique_id}}",
     "type": "user",
-    "lat" : "7.1131308",
-    "lng" : "-73.119994194"
+    "lat" : "7.1230576305005405",
+    "lng" : "-73.137442192"
+}
+
+### user out
+POST {{server}}/point/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": "{{unique_id}}",
+    "type": "user",
+    "lat" : "7.130553076824839",
+    "lng" : "-73.12076279594531"
+}
+
+### user in
+POST {{server}}/point/unset HTTP/1.1
+Content-Type: application/json
+
+{
+    "id": "{{requestID.response.body.$.id}}",
+    "type": "user"
 }
 
 ### set detection 
@@ -27,4 +47,17 @@ Content-Type: application/json
     "lng" : "-73.119994194",
     "trigger" : ["enter", "exit"],
     "radius" : "100"
+}
+
+
+
+### set fence detection 
+POST {{server}}/geofence/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "type": "user",
+    "fence_id" : "zona_1",
+    "trigger": ["enter", "exit"],
+    "geojson": "{\"features\":[{\"geometry\":{\"coordinates\":[[[-73.1214614531143,7.13101274281496],[-73.1212988009966,7.13021555364789],[-73.1221317769915,7.13000036124185],[-73.1219001209458,7.1291591535955],[-73.1202588132165,7.1294917242448],[-73.1206186194149,7.13119369967171],[-73.1214614531143,7.13101274281496]]],\"type\":\"Polygon\"},\"properties\":{},\"type\":\"Feature\"}],\"type\":\"FeatureCollection\"}"
 }
