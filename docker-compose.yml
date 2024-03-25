@@ -1,0 +1,27 @@
+services:
+  server:
+    image: geosmartsystem:latest
+    container_name: server
+    ports:
+      - 3002:3002
+    # volumes:
+    #   - ./public:/public
+    environment:
+      - SERVER_ADDRESS=server
+      - SERVER_PORT=3002
+      - TILE38_ADDRESS=tile38
+      - TILE38_PORT=9851
+      - REFRESH_TIME=3
+    depends_on:
+      - tile38
+  tile38:
+    image: tile38/tile38
+    container_name: tile38
+    # volumes:
+    #   - tile38-data:/data
+    command: ["tile38-server", "-d", "/data"]
+    healthcheck:
+      test: ["CMD", "tile38-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5

@@ -9,9 +9,9 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
-	"github.com/supanadit/geo-smart-system/system"
-	"github.com/supanadit/geo-smart-system/server"
 	"github.com/supanadit/geo-smart-system/model/tile38"
+	"github.com/supanadit/geo-smart-system/server"
+	"github.com/supanadit/geo-smart-system/system"
 )
 
 func main() {
@@ -29,21 +29,20 @@ func main() {
 	// We are streaming current tile38 keys to clients in the interval 10 seconds
 	go func() {
 		for {
-			time.Sleep(time.Second * 3)
-				data, err := tile38.FromScan(client, "user")
-				if err != nil {
-					log.Printf("Error getting data: %v", err)
-					return
-				}
-				dataStr, err := data.ToJsonString()
-				if err != nil {
-					log.Printf("Error converting data to JSON: %v", err)
-					return
-				}
+			time.Sleep(time.Second * 1)
+			data, err := tile38.FromScan(client, "user")
+			if err != nil {
+				log.Printf("Error getting data: %v", err)
+				return
+			}
+			dataStr, err := data.ToJsonString()
+			if err != nil {
+				log.Printf("Error converting data to JSON: %v", err)
+				return
+			}
 			stream.Message <- dataStr
 		}
 	}()
-
 
 	// Add event-streaming headers
 	r.GET("/point/get/stream", server.HeadersMiddleware(), stream.ServeHTTP(), func(c *gin.Context) {

@@ -1,14 +1,24 @@
 package system
 
-import "fmt"
-
-const (
-	// Tile 38
-	Tile38Address = "127.0.0.1"
-	Tile38Port    = "9851"
-	ServerAddress = "192.168.1.12"
-	ServerPort 	  = "8080"
+import (
+	"fmt"
+	"os"
 )
+
+var (
+    Tile38Address = getEnv("TILE38_ADDRESS", "127.0.0.1")
+    Tile38Port    = getEnv("TILE38_PORT", "9851")
+    ServerAddress = getEnv("SERVER_ADDRESS", "192.168.1.12")
+    ServerPort    = getEnv("SERVER_PORT", "8080")
+)
+
+func getEnv(key, defaultValue string) string {
+    value, exists := os.LookupEnv(key)
+    if !exists {
+        value = defaultValue
+    }
+    return value
+}
 
 func GetTile38ConnectionAddress() string {
 	return fmt.Sprintf("%s:%s", Tile38Address, Tile38Port)

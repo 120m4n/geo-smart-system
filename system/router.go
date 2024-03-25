@@ -26,7 +26,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 	r.POST("/point/set", func(c *gin.Context) {
 		var location model.Location
 		err := c.BindJSON(&location)
-		client.Do("SET", location.Type, location.Id, "POINT", location.Lat, location.Lng)
+		client.Do("SET", location.Type, location.Id, "EX", 30, "POINT", location.Lat, location.Lng)
 		var status map[string]interface{}
 		var httpStatus int
 		if err != nil {
@@ -63,7 +63,11 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 		c.JSON(http.StatusOK, data)
 	})
 
-	
+	r.GET("/geofences/get", func(c *gin.Context) {
+		data, _ := tile38.HooksFromScan(client, "HOOKS")
+		c.JSON(http.StatusOK, data)
+	})
+
 	r.POST("/detection/set", func(c *gin.Context) {
 		var detection model.Detection
 		err := c.BindJSON(&detection)
@@ -76,7 +80,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 			status = gin.H{"status": "Please include trigger type such as 'enter','cross','exit','inside' or 'outside'"}
 			httpStatus = http.StatusBadRequest
 		} else {
-			
+
 			client.Do("SETHOOK", hookID, hookURL, "NEARBY", detection.Type, "FENCE", "DETECT", trigger, "POINT", detection.Lat, detection.Lng, detection.Radius)
 			if err != nil {
 				status = gin.H{"status": "Unknown Error"}
@@ -93,10 +97,10 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 	r.POST("/geofence/set", func(c *gin.Context) {
 		var geofence model.Geofence
 		if err := c.ShouldBindJSON(&geofence); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),})
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		hookID := "HOOK-" + xid.New().String()
+		hookID := geofence.FenceId
 		hookURL := GetTile38HookURL(hookID)
 		trigger := strings.Join(geofence.TriggerType, ",")
 		var status map[string]interface{}
@@ -111,8 +115,8 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 			// 	status = gin.H{"status": "Unknown Error"}
 			// 	httpStatus = http.StatusInternalServerError
 			// } else {
-				status = gin.H{"status": "Ok", "hook": hookID}
-				httpStatus = http.StatusOK
+			status = gin.H{"status": "Ok", "hook": hookID}
+			httpStatus = http.StatusOK
 			// }
 		}
 		c.Writer.Header().Set("Content-Type", "application/json")
