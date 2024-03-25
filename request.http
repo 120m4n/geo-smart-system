@@ -1,4 +1,4 @@
-@server=http://127.0.0.1:8080
+@server=http://127.0.0.1:3002
 
 ### get unique id
 # @name requestID
@@ -26,6 +26,20 @@ Content-Type: application/json
     "type": "user",
     "lat" : "7.131354518128816",
     "lng" : "-73.11778878718832"
+}
+
+### avatar step 2 in
+POST  {{server}}/coordinates HTTP/1.1
+Content-Type: application/json
+
+{
+  "coordinates": { 
+    "latitude": 7.1301016117887315,
+    "longitude": -73.1217566850091
+  },
+  "user_id": "test/120m4n",
+  "unique_id": "{{unique_id}}",
+  "fleet":"avatar"
 }
 
 ### user in
@@ -56,10 +70,10 @@ POST {{server}}/geofence/set HTTP/1.1
 Content-Type: application/json
 
 {
-    "type": "user",
+    "type": "avatar",
     "fence_id" : "zona_1",
     "trigger": ["enter", "exit"],
-    "geojson": "{\"features\":[{\"geometry\":{\"coordinates\":[[[-73.1214614531143,7.13101274281496],[-73.1212988009966,7.13021555364789],[-73.1221317769915,7.13000036124185],[-73.1219001209458,7.1291591535955],[-73.1202588132165,7.1294917242448],[-73.1206186194149,7.13119369967171],[-73.1214614531143,7.13101274281496]]],\"type\":\"Polygon\"},\"properties\":{\"Name\": \"zona_1\"},\"type\":\"Feature\"}],\"type\":\"FeatureCollection\"}"
+    "geojson": "{\"features\":[{\"geometry\":{\"coordinates\":[[[-73.1216394332437,7.13119952392347],[-73.1214317370815,7.13033504886904],[-73.1222605549802,7.13012436431809],[-73.1219726979696,7.12897353916928],[-73.1200355696902,7.12946526111591],[-73.1205070746098,7.13143513239987],[-73.1216394332437,7.13119952392347]]],\"type\":\"Polygon\"},\"properties\":{\"Name\":\"zona_1\"},\"type\":\"Feature\"}],\"type\":\"FeatureCollection\"}"
 }
 
 ### set fence detection
@@ -67,10 +81,10 @@ POST {{server}}/geofence/set HTTP/1.1
 Content-Type: application/json
 
 {
-    "type": "user",
+    "type": "avatar",
     "fence_id" : "zona_2",
     "trigger": ["enter", "exit"],
-    "geojson": "{\"features\":[{\"geometry\":{\"coordinates\":[[[-73.118990925955,7.13154108554438],[-73.1188390806288,7.13066878116814],[-73.1180958377148,7.13081945204242],[-73.1182237074634,7.13165210598153],[-73.118990925955,7.13154108554438]]],\"type\":\"Polygon\"},\"properties\":{\"Name\": \"zona_2\"},\"type\":\"Feature\"}],\"type\":\"FeatureCollection\"}"
+    "geojson": "{\"features\":[{\"geometry\":{\"coordinates\":[[[-73.119264941439,7.12851479693417],[-73.1202156710847,7.12806148390395],[-73.1202403653599,7.12672604556394],[-73.1189809573275,7.12613796138973],[-73.1182895176236,7.12664028333525],[-73.1179684920462,7.12791446335966],[-73.1183018647608,7.12845353845816],[-73.119264941439,7.12851479693417]]],\"type\":\"Polygon\"},\"properties\":{\"Name\":\"zona_2\"},\"type\":\"Feature\"}],\"type\":\"FeatureCollection\"}"
 }
 
 

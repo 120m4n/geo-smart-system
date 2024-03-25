@@ -42,10 +42,13 @@ COPY --from=build /bin/server /tmp/
 # Copia la base de datos SQLite3 al contenedor Docker
 # COPY ./database/mydatabase.db /mydatabase.db
 ADD ./public /public
+ADD ./assets /assets
 # change public folder permissions to appuser
 RUN chown -R appuser /public
-# change executable permissions to all public files 755
 RUN chmod -R 755 /public
+
+RUN chown -R appuser /assets
+RUN chmod -R 755 /assets
 # change server permissions to appuser
 RUN chown appuser /tmp/server
 USER appuser

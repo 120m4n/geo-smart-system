@@ -40,6 +40,19 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 		c.JSON(httpStatus, status)
 	})
 
+	r.POST("/coordinates", func(c *gin.Context) {
+		var request model.CoordinatesRequest
+		if err := c.ShouldBindJSON(&request); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "status": false})
+			return
+		}
+		client.Do("SET", request.Fleet, request.UserID, "FIELD", "unique_id", request.UniqueID, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
+		c.JSON(http.StatusOK, model.CoordinatesResponse{
+			Message: "Coordinates Inserted",
+			Status:  true,
+		})
+	})
+
 	r.POST("/point/unset", func(c *gin.Context) {
 		var location model.Location
 		err := c.BindJSON(&location)

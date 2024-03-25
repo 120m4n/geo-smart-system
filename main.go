@@ -30,22 +30,24 @@ func main() {
 	go func() {
 		for {
 			time.Sleep(time.Second * 1)
-			data, err := tile38.FromScan(client, "user")
+			data, err := tile38.FromScan(client, "avatar")
 			if err != nil {
 				log.Printf("Error getting data: %v", err)
 				return
 			}
-			dataStr, err := data.ToJsonString()
-			if err != nil {
-				log.Printf("Error converting data to JSON: %v", err)
-				return
+			if len(data.Object) > 0 {
+				dataStr, err := data.ToJsonString()
+				if err != nil {
+					log.Printf("Error converting data to JSON: %v", err)
+					return
+				}
+				stream.Message <- dataStr
 			}
-			stream.Message <- dataStr
 		}
 	}()
 
 	// Add event-streaming headers
-	r.GET("/point/get/stream", server.HeadersMiddleware(), stream.ServeHTTP(), func(c *gin.Context) {
+	r.GET("/sse", server.HeadersMiddleware(), stream.ServeHTTP(), func(c *gin.Context) {
 		v, ok := c.Get("clientChan")
 		if !ok {
 			return
