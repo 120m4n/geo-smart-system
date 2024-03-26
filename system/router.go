@@ -6,18 +6,20 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	// "github.com/gin-contrib/sse"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
 	"github.com/gorilla/websocket"
+	"github.com/nats-io/nats.go"
 	"github.com/rs/xid"
 	"github.com/supanadit/geo-smart-system/model"
 	"github.com/supanadit/geo-smart-system/model/tile38"
 	"github.com/supanadit/geo-smart-system/server"
 )
 
-func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
+func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.Conn ) {
 	r.GET("/id/get/unique", func(c *gin.Context) {
 		id := xid.New()
 		c.JSON(200, gin.H{"id": id.String()})
@@ -46,7 +48,25 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event) {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "status": false})
 			return
 		}
-		client.Do("SET", request.Fleet, request.UserID, "FIELD", "unique_id", request.UniqueID, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
+
+		doc := model.Document{
+			UniqueId:     request.UniqueID,
+			UserId:       request.UserID,
+			Fleet:        request.Fleet,
+			Location:     model.MongoLocation{Type: "Point", Coordinates: []float64{request.Coordinates.Latitude, request.Coordinates.Longitude}},
+			OriginIp:     c.ClientIP(),
+			LastModified: time.Now().Unix(),
+		}
+	
+		docJson, err := json.Marshal(doc)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "status": false})
+			return
+		}
+	
+		nc.Publish("coordinates", docJson)
+	
+		client.Do("SET", request.Fleet, request.UniqueID, "FIELD", "user_id", request.UserID, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
 		c.JSON(http.StatusOK, model.CoordinatesResponse{
 			Message: "Coordinates Inserted",
 			Status:  true,

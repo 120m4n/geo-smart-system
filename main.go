@@ -9,6 +9,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+	"github.com/nats-io/nats.go"
 	"github.com/supanadit/geo-smart-system/model/tile38"
 	"github.com/supanadit/geo-smart-system/server"
 	"github.com/supanadit/geo-smart-system/system"
@@ -19,6 +20,14 @@ func main() {
 	client := redis.NewClient(&redis.Options{
 		Addr: system.GetTile38ConnectionAddress(),
 	})
+	// Create a new NATS client
+	// Connect to NATS server
+	url := "nats://localhost:4222"
+	nc, err := nats.Connect(url)
+	if err != nil {
+		log.Fatalf("Error connecting to NATS: %v", err)
+	}
+	defer nc.Close()
 	// Create Gin Engine
 	r := gin.Default()
 	r.Use(cors.Default())
@@ -67,7 +76,7 @@ func main() {
 	})
 
 	// Call Router
-	system.Router(r, client, stream)
+	system.Router(r, client, stream, nc)
 	// Run Server
 	_ = r.Run(fmt.Sprintf(":%s", system.ServerPort))
 
