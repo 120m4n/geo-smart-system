@@ -53,7 +53,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			UniqueId:     request.UniqueID,
 			UserId:       request.UserID,
 			Fleet:        request.Fleet,
-			Location:     model.MongoLocation{Type: "Point", Coordinates: []float64{request.Coordinates.Latitude, request.Coordinates.Longitude}},
+			Location:     model.MongoLocation{Type: "Point", Coordinates: []float64{request.Coordinates.Longitude, request.Coordinates.Latitude}},
 			OriginIp:     c.ClientIP(),
 			LastModified: time.Now().Unix(),
 		}
@@ -66,7 +66,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 	
 		nc.Publish("coordinates", docJson)
 	
-		client.Do("SET", request.Fleet, request.UniqueID, "FIELD", "user_id", request.UserID, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
+		client.Do("SET", "avatar", request.UniqueID, "FIELD", "user_id", request.UserID, "FIELD", "fleet", request.Fleet, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
 		c.JSON(http.StatusOK, model.CoordinatesResponse{
 			Message: "Coordinates Inserted",
 			Status:  true,

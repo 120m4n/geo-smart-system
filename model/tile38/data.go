@@ -33,14 +33,22 @@ func FromScan(client *redis.Client, name string) (Data, error) {
 					name := "data.1." + strconv.FormatInt(int64(x), 10)
 					idName := name + ".0"
 					contentName := name + ".1"
+					arrName := name + ".2"
 					id := gjson.Get(jsonConverted, idName)
 					content := gjson.Get(jsonConverted, contentName)
+					arr := gjson.Get(jsonConverted, arrName)
+					fields := make([]string, len(arr.Array()))
+					for i, v := range arr.Array() {
+						fields[i] = v.String()
+					}
+
 					var tile38Object Object
 					var tile38SubObject SubObject
 					err = json.Unmarshal([]byte(content.String()), &tile38SubObject)
 					if err == nil {
 						tile38Object.Id = id.String()
 						tile38Object.Object = tile38SubObject
+						tile38Object.Fields = fields
 						tile38Data.Object = append(tile38Data.Object, tile38Object)
 					}
 				}

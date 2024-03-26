@@ -27,7 +27,7 @@ Content-Type: application/json
         "longitude" : -73.11778878718832
     },
     "user_id": "test/120m4n",
-    "unique_id": "{{unique_id}}",
+    "unique_id": "abcd1234",
     "fleet":"avatar"
 }
 
@@ -41,7 +41,7 @@ Content-Type: application/json
     "longitude": -73.1217566850091
   },
   "user_id": "test/120m4n",
-  "unique_id": "{{unique_id}}",
+  "unique_id": "abcd1234",
   "fleet":"avatar"
 }
 

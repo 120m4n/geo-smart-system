@@ -10,6 +10,7 @@ var (
     Tile38Port    = getEnv("TILE38_PORT", "9851")
     ServerAddress = getEnv("SERVER_ADDRESS", "192.168.1.12")
     ServerPort    = getEnv("SERVER_PORT", "8080")
+    NatsAddress   = getEnv("NATS_ADDRESS", "127.0.0.1")
 )
 
 func getEnv(key, defaultValue string) string {
@@ -30,4 +31,8 @@ func GetServerAddress() string {
 
 func GetTile38HookURL(hookID string) string {
 	return fmt.Sprintf("http://%s/detection/call?hook=%s", GetServerAddress(), hookID)
+}
+
+func GetNatsConnectionAddress() string {
+    return fmt.Sprintf("nats://%s:%s", NatsAddress, "4222")
 }

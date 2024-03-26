@@ -22,7 +22,8 @@ func main() {
 	})
 	// Create a new NATS client
 	// Connect to NATS server
-	url := "nats://localhost:4222"
+	url := system.GetNatsConnectionAddress()
+	log.Printf("Connecting to NATS: %v", url)
 	nc, err := nats.Connect(url)
 	if err != nil {
 		log.Fatalf("Error connecting to NATS: %v", err)
@@ -38,7 +39,7 @@ func main() {
 	// We are streaming current tile38 keys to clients in the interval 10 seconds
 	go func() {
 		for {
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 60)
 			data, err := tile38.FromScan(client, "avatar")
 			if err != nil {
 				log.Printf("Error getting data: %v", err)
