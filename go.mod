@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/gorilla/websocket v1.5.1
 	github.com/nats-io/nats.go v1.34.0
+	github.com/paulmach/orb v0.11.1
 	github.com/rs/xid v1.5.0
 	github.com/tidwall/gjson v1.17.1
 )
@@ -40,6 +41,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
+	go.mongodb.org/mongo-driver v1.11.4 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
