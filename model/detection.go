@@ -13,14 +13,13 @@ type Detection struct {
 	Type        string   `json:"type" binding:"required"`
 	DetectionId string   `json:"detection_id" binding:"required"`
 	Latitude    float64  `json:"latitude" binding:"required"`
-	Longitude 	float64  `json:"longitude" binding:"required"`
+	Longitude   float64  `json:"longitude" binding:"required"`
 	Radius      float64  `json:"radius" binding:"required"`
 	TriggerType []string `json:"trigger" binding:"required"`
 }
 
-
 type Geofence struct {
-	Type		string   `json:"type" binding:"required"`
+	Type        string   `json:"type" binding:"required"`
 	FenceId     string   `json:"fence_id" binding:"required"`
 	TriggerType []string `json:"trigger" binding:"required"`
 	GeojsonStr  string   `json:"geojson" binding:"required"`
@@ -32,12 +31,12 @@ type Object struct {
 }
 
 type HookRequest struct {
-	Command string  `json:"command"`
-	Group   string  `json:"group"`
-	Detect  string  `json:"detect"`
-	Hook    string  `json:"hook"`
-	Key     string  `json:"key"`
-	Time    string  `json:"time"`
-	ID      string  `json:"id"`
-	Object  Object  `json:"object"`
+	Command string `json:"command"`
+	Group   string `json:"group"`
+	Detect  string `json:"detect"`
+	Hook    string `json:"hook"`
+	Key     string `json:"key"`
+	Time    string `json:"time"`
+	ID      string `json:"id"`
+	Object  Object `json:"object"`
 }

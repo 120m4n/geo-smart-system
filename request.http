@@ -54,7 +54,7 @@ Content-Type: application/json
     "type": "user"
 }
 
-### set detection 
+### set detection POI 1 (point of interest)
 POST {{server}}/detection/set HTTP/1.1
 Content-Type: application/json
 
@@ -64,6 +64,35 @@ Content-Type: application/json
     "latitude": 7.134611389344414,
     "longitude": -73.1179759318848,
     "radius" : 50,
+    "trigger" : ["enter", "exit"]
+    
+}
+
+### set detection POI 2 (point of interest)
+POST {{server}}/detection/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "type": "avatar",
+    "detection_id" : "poi_2",
+    "latitude": 7.129857835868549,
+    "longitude": -73.12296347107322,
+    "radius" : 30,
+    "trigger" : ["enter", "exit"]
+    
+}
+
+
+### set detection POI 3 (point of interest)
+POST {{server}}/detection/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "type": "avatar",
+    "detection_id" : "poi_3",
+    "latitude": 7.130503842031828,
+    "longitude": -73.1195926485212,
+    "radius" : 27,
     "trigger" : ["enter", "exit"]
     
 }

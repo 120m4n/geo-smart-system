@@ -1,12 +1,11 @@
 package system
 
 import (
-	"math"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/project"
+	"math"
 )
-
 
 // Función para generar un objeto GeoJSON de un círculo
 func GenerarGeoJSONCirculo(lon, lat, radio float64) *geojson.Feature {
@@ -23,8 +22,8 @@ func GenerarGeoJSONCirculo(lon, lat, radio float64) *geojson.Feature {
 	// Recorrer los 360 grados para calcular los puntos del círculo
 	for angulo := 0.0; angulo < 360; angulo += pasoGrados {
 		// Calcular la latitud y longitud del punto actual en coordenadas UTM
-		x := centroUTM[0] + radio * math.Cos(angulo * math.Pi / 180)
-		y := centroUTM[1] + radio * math.Sin(angulo * math.Pi / 180)
+		x := centroUTM[0] + radio*math.Cos(angulo*math.Pi/180)
+		y := centroUTM[1] + radio*math.Sin(angulo*math.Pi/180)
 
 		// Crear un nuevo punto y agregarlo al arreglo
 		punto := project.Mercator.ToWGS84(orb.Point{x, y})

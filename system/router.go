@@ -19,7 +19,7 @@ import (
 	"github.com/supanadit/geo-smart-system/server"
 )
 
-func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.Conn ) {
+func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.Conn) {
 	r.GET("/id/get/unique", func(c *gin.Context) {
 		id := xid.New()
 		c.JSON(200, gin.H{"id": id.String()})
@@ -57,15 +57,15 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			OriginIp:     c.ClientIP(),
 			LastModified: time.Now().Unix(),
 		}
-	
+
 		docJson, err := json.Marshal(doc)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "status": false})
 			return
 		}
-	
+
 		nc.Publish("coordinates", docJson)
-	
+
 		client.Do("SET", "avatar", request.UniqueID, "FIELD", "user_id", request.UserID, "FIELD", "fleet", request.Fleet, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
 		c.JSON(http.StatusOK, model.CoordinatesResponse{
 			Message: "Coordinates Inserted",
@@ -125,7 +125,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			client.Do("SET", "HOOKS", hookID, "OBJECT", string(circleJSON))
 			client.Do("SETHOOK", hookID, hookURL, "WITHIN", detection.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
 
-			status = gin.H{"status": "Ok"}
+			status = gin.H{"status": "Ok", "hook": hookID}
 			httpStatus = http.StatusOK
 		}
 		c.Writer.Header().Set("Content-Type", "application/json")
