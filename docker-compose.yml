@@ -16,7 +16,7 @@ services:
       - SERVER_PORT=3002
       - TILE38_ADDRESS=tile38_server
       - TILE38_PORT=9851
-      - NATS_ADDRESS=172.18.0.3
+      - NATS_ADDRESS=nats_server
     depends_on:
       - tile38_server
   tile38_server:
@@ -32,6 +32,15 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  nats_server:
+    image: nats:latest
+    container_name: nats_server
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+    networks:
+      - network_geosmartsystem   
 networks:
   network_geosmartsystem:
     external: true

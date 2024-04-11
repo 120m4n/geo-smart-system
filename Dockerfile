@@ -1,6 +1,4 @@
-# syntax=docker/dockerfile:1
-# Create a stage for building the application.
-# Start from the latest golang base image
+
 ARG GO_VERSION=1.21.6
 FROM golang:${GO_VERSION} AS build
 WORKDIR /src

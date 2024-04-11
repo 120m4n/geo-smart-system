@@ -10,11 +10,12 @@ const (
 )
 
 type Detection struct {
-	Type        string   `json:"type"`
-	Lat         string   `json:"lat"`
-	Lng         string   `json:"lng"`
-	TriggerType []string `json:"trigger"`
-	Radius      string   `json:"radius"`
+	Type        string   `json:"type" binding:"required"`
+	DetectionId string   `json:"detection_id" binding:"required"`
+	Latitude    float64  `json:"latitude" binding:"required"`
+	Longitude 	float64  `json:"longitude" binding:"required"`
+	Radius      float64  `json:"radius" binding:"required"`
+	TriggerType []string `json:"trigger" binding:"required"`
 }
 
 

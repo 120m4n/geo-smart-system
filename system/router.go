@@ -103,8 +103,11 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 
 	r.POST("/detection/set", func(c *gin.Context) {
 		var detection model.Detection
-		err := c.BindJSON(&detection)
-		hookID := "HOOK-" + xid.New().String()
+		if err := c.ShouldBindJSON(&detection); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		hookID := detection.DetectionId
 		hookURL := GetTile38HookURL(hookID)
 		trigger := strings.Join(detection.TriggerType, ",")
 		var status map[string]interface{}
@@ -113,15 +116,17 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			status = gin.H{"status": "Please include trigger type such as 'enter','cross','exit','inside' or 'outside'"}
 			httpStatus = http.StatusBadRequest
 		} else {
-
-			client.Do("SETHOOK", hookID, hookURL, "NEARBY", detection.Type, "FENCE", "DETECT", trigger, "POINT", detection.Lat, detection.Lng, detection.Radius)
+			circle := GenerarGeoJSONCirculo(detection.Longitude, detection.Latitude, detection.Radius)
+			circleJSON, err := json.Marshal(circle)
 			if err != nil {
-				status = gin.H{"status": "Unknown Error"}
-				httpStatus = http.StatusInternalServerError
-			} else {
-				status = gin.H{"status": "Ok"}
-				httpStatus = http.StatusOK
+				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				return
 			}
+			client.Do("SET", "HOOKS", hookID, "OBJECT", string(circleJSON))
+			client.Do("SETHOOK", hookID, hookURL, "WITHIN", detection.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
+
+			status = gin.H{"status": "Ok"}
+			httpStatus = http.StatusOK
 		}
 		c.Writer.Header().Set("Content-Type", "application/json")
 		c.JSON(httpStatus, status)

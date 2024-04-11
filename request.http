@@ -60,10 +60,12 @@ Content-Type: application/json
 
 {
     "type": "avatar",
-    "lat" : "7.1308",
-    "lng" : "-73.119994194",
-    "trigger" : ["enter", "exit"],
-    "radius" : "100"
+    "detection_id" : "poi_1",
+    "latitude": 7.134611389344414,
+    "longitude": -73.1179759318848,
+    "radius" : 50,
+    "trigger" : ["enter", "exit"]
+    
 }
 
 
