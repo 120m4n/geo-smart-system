@@ -38,20 +38,25 @@ func main() {
 
 	// We are streaming current tile38 keys to clients in the interval 10 seconds
 	go func() {
+		var sentWhenNull bool
 		for {
-			time.Sleep(time.Second * 60)
+			time.Sleep(time.Second * 1)
 			data, err := tile38.FromScan(client, "avatar")
 			if err != nil {
 				log.Printf("Error getting data: %v", err)
 				return
 			}
+			dataStr, err := data.ToJsonString()
+			if err != nil {
+				log.Printf("Error converting data to JSON: %v", err)
+				return
+			}
 			if len(data.Object) > 0 {
-				dataStr, err := data.ToJsonString()
-				if err != nil {
-					log.Printf("Error converting data to JSON: %v", err)
-					return
-				}
 				stream.Message <- dataStr
+				sentWhenNull = false // Reset the flag when data.Object is not null
+			} else if !sentWhenNull {
+				stream.Message <- dataStr
+				sentWhenNull = true // Set the flag to prevent sending more messages
 			}
 		}
 	}()

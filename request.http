@@ -59,7 +59,7 @@ POST {{server}}/detection/set HTTP/1.1
 Content-Type: application/json
 
 {
-    "type": "user",
+    "type": "avatar",
     "lat" : "7.1308",
     "lng" : "-73.119994194",
     "trigger" : ["enter", "exit"],

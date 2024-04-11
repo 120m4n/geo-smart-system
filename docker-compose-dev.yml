@@ -1,0 +1,23 @@
+services:
+  nats_server:
+    image: nats:latest
+    container_name: dev_nats_server
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+  tile38_server:
+    image: tile38/tile38
+    container_name: dev_tile38_server
+    volumes:
+      - dev-tile38-data:/data
+    command: ["tile38-server", "-d", "/data"]
+    ports:
+      - 9851:9851
+    healthcheck:
+      test: ["CMD", "tile38-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  dev-tile38-data:

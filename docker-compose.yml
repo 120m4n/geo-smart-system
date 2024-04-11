@@ -16,7 +16,7 @@ services:
       - SERVER_PORT=3002
       - TILE38_ADDRESS=tile38_server
       - TILE38_PORT=9851
-      - NATS_ADDRESS=172.31.0.2
+      - NATS_ADDRESS=172.18.0.3
     depends_on:
       - tile38_server
   tile38_server:
