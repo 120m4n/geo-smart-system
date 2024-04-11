@@ -6,6 +6,7 @@ require (
 	github.com/gin-contrib/cors v1.7.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-redis/redis v6.15.9+incompatible
+	github.com/google/open-location-code/go v0.0.0-20240410091707-7dc3b4c76be0
 	github.com/gorilla/websocket v1.5.1
 	github.com/nats-io/nats.go v1.34.0
 	github.com/paulmach/orb v0.11.1

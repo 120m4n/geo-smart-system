@@ -25,6 +25,12 @@ type Geofence struct {
 	GeojsonStr  string   `json:"geojson" binding:"required"`
 }
 
+type CodePlusRequest struct {
+	Type        string `json:"type" binding:"required"`
+	CodePlus    string `json:"code_plus" binding:"required"`
+	TriggerType []string `json:"trigger" binding:"required"`
+}
+
 type Object struct {
 	Type        string    `json:"type"`
 	Coordinates []float64 `json:"coordinates"`

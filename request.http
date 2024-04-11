@@ -90,11 +90,21 @@ Content-Type: application/json
 {
     "type": "avatar",
     "detection_id" : "poi_3",
-    "latitude": 7.130503842031828,
-    "longitude": -73.1195926485212,
+    "latitude": 7.128544822285939,
+    "longitude": -73.12086892933067,
     "radius" : 27,
     "trigger" : ["enter", "exit"]
     
+}
+
+### set detection codeplus
+POST {{server}}/codeplus/set HTTP/1.1
+Content-Type: application/json
+
+{
+    "type": "avatar",
+    "code_plus":"67V84VJJ+",
+    "trigger" : ["enter", "exit"]
 }
 
 

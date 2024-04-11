@@ -2,6 +2,7 @@ package system
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -132,6 +133,44 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 		c.JSON(httpStatus, status)
 	})
 
+	
+	r.POST("/codeplus/set", func(c *gin.Context) {
+		var codePlus model.CodePlusRequest
+		if err := c.ShouldBindJSON(&codePlus); err != nil {
+			respondWithError(c, http.StatusBadRequest, err)
+			return
+		}
+	
+		hookID := codePlus.CodePlus
+		hookURL := GetTile38HookURL(hookID)
+		trigger := strings.Join(codePlus.TriggerType, ",")
+	
+		if trigger == "" {
+			respondWithError(c, http.StatusBadRequest, errors.New("please include trigger type such as 'enter','cross','exit','inside' or 'outside'"))
+			return
+		}
+	
+		// Convert the CodePlus code to a polygon-type GeoJSON
+		polygon, err := CodePlusToPolygon(codePlus.CodePlus)
+		if err != nil {
+			respondWithError(c, http.StatusBadRequest, err)
+			return
+		}
+	
+		// Marshal the polygon to a JSON string
+		polygonJSON, err := json.Marshal(polygon)
+		if err != nil {
+			respondWithError(c, http.StatusBadRequest, err)
+			return
+		}
+	
+		client.Do("SET", "HOOKS", hookID, "OBJECT", string(polygonJSON))
+		client.Do("SETHOOK", hookID, hookURL, "WITHIN", codePlus.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
+	
+		c.Writer.Header().Set("Content-Type", "application/json")
+		c.JSON(http.StatusOK, gin.H{"status": "Ok", "hook": hookID})
+	})
+
 	r.POST("/geofence/set", func(c *gin.Context) {
 		var geofence model.Geofence
 		if err := c.ShouldBindJSON(&geofence); err != nil {
@@ -228,4 +267,10 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("Received : %s \n", msg)
 		_ = conn.WriteMessage(t, []byte("OK"))
 	}
+}
+
+
+func respondWithError(c *gin.Context, httpStatus int, err error) {
+	c.JSON(httpStatus, gin.H{"error": err.Error()})
+	c.Abort() // Prevent any pending handlers from being called
 }

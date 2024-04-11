@@ -4,6 +4,7 @@ import (
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/paulmach/orb/project"
+	"github.com/google/open-location-code/go"
 	"math"
 )
 
@@ -42,4 +43,32 @@ func GenerarGeoJSONCirculo(lon, lat, radio float64) *geojson.Feature {
 	}
 
 	return feature
+}
+
+
+	
+
+
+func CodePlusToPolygon(codePlus string) (*geojson.Feature, error) {
+	// Decode the Plus Code into a latitude/longitude bounding box
+	area, err := olc.Decode(codePlus)
+	if err != nil {
+		return nil, err
+	}
+
+	// Convert the bounding box into a GeoJSON polygon
+	polygon := orb.Polygon{
+		{
+			{area.LngLo, area.LatLo}, // Lower left corner
+			{area.LngLo, area.LatHi}, // Upper left corner
+			{area.LngHi, area.LatHi}, // Upper right corner
+			{area.LngHi, area.LatLo}, // Lower right corner
+			{area.LngLo, area.LatLo}, // Close the polygon
+		},
+	}
+
+	// Create a GeoJSON feature for the polygon
+	feature := geojson.NewFeature(polygon)
+
+	return feature, nil
 }
