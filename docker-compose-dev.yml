@@ -1,4 +1,13 @@
 services:
+  server:
+    image: geo-smart-system-server:latest
+    container_name: geo_server
+    ports:
+      - 3002:3002
+    environment:
+      - NATS_ADDRESS=dev_nats_server
+      - TILE38_ADDRESS=dev_tile38_server
+      - SERVER_PORT=3002
   nats_server:
     image: nats:latest
     container_name: dev_nats_server
