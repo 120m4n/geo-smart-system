@@ -22,6 +22,8 @@ services:
   tile38_server:
     image: tile38/tile38
     container_name: tile38_server
+    ports:
+      - 9851:9851
     # volumes:
     #   - tile38-data:/data
     networks:

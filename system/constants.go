@@ -9,7 +9,7 @@ var (
 	Tile38Address = getEnv("TILE38_ADDRESS", "127.0.0.1")
 	Tile38Port    = getEnv("TILE38_PORT", "9851")
 	ServerAddress = getEnv("SERVER_ADDRESS", "127.0.0.1")
-	ServerPort    = getEnv("SERVER_PORT", "8080")
+	ServerPort    = getEnv("SERVER_PORT", "3002")
 	NatsAddress   = getEnv("NATS_ADDRESS", "127.0.0.1")
 )
 

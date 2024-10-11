@@ -133,40 +133,39 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 		c.JSON(httpStatus, status)
 	})
 
-	
 	r.POST("/codeplus/set", func(c *gin.Context) {
 		var codePlus model.CodePlusRequest
 		if err := c.ShouldBindJSON(&codePlus); err != nil {
 			respondWithError(c, http.StatusBadRequest, err)
 			return
 		}
-	
+
 		hookID := codePlus.CodePlus
 		hookURL := GetTile38HookURL(hookID)
 		trigger := strings.Join(codePlus.TriggerType, ",")
-	
+
 		if trigger == "" {
 			respondWithError(c, http.StatusBadRequest, errors.New("please include trigger type such as 'enter','cross','exit','inside' or 'outside'"))
 			return
 		}
-	
+
 		// Convert the CodePlus code to a polygon-type GeoJSON
 		polygon, err := CodePlusToPolygon(codePlus.CodePlus)
 		if err != nil {
 			respondWithError(c, http.StatusBadRequest, err)
 			return
 		}
-	
+
 		// Marshal the polygon to a JSON string
 		polygonJSON, err := json.Marshal(polygon)
 		if err != nil {
 			respondWithError(c, http.StatusBadRequest, err)
 			return
 		}
-	
+
 		client.Do("SET", "HOOKS", hookID, "OBJECT", string(polygonJSON))
 		client.Do("SETHOOK", hookID, hookURL, "WITHIN", codePlus.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
-	
+
 		c.Writer.Header().Set("Content-Type", "application/json")
 		c.JSON(http.StatusOK, gin.H{"status": "Ok", "hook": hookID})
 	})
@@ -186,7 +185,9 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			status = gin.H{"status": "Please include trigger type such as 'enter','cross','exit','inside' or 'outside'"}
 			httpStatus = http.StatusBadRequest
 		} else {
+			client.Do("DEL", "HOOKS", geofence.FenceId)
 			client.Do("SET", "HOOKS", geofence.FenceId, "OBJECT", geofence.GeojsonStr)
+			client.Do("DELHOOK", hookID)
 			client.Do("SETHOOK", hookID, hookURL, "WITHIN", geofence.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", geofence.FenceId)
 			// if err != nil {
 			// 	status = gin.H{"status": "Unknown Error"}
@@ -268,7 +269,6 @@ func websocketHandler(w http.ResponseWriter, r *http.Request) {
 		_ = conn.WriteMessage(t, []byte("OK"))
 	}
 }
-
 
 func respondWithError(c *gin.Context, httpStatus int, err error) {
 	c.JSON(httpStatus, gin.H{"error": err.Error()})

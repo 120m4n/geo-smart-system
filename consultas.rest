@@ -92,7 +92,7 @@ Content-Type: application/json
     "detection_id" : "poi_3",
     "latitude": 7.128544822285939,
     "longitude": -73.12086892933067,
-    "radius" : 27,
+    "radius" : 127,
     "trigger" : ["enter", "exit"]
     
 }
