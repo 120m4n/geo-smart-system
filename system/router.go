@@ -123,7 +123,9 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 				c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				return
 			}
+			client.Do("DEL", "HOOKS", hookID)
 			client.Do("SET", "HOOKS", hookID, "OBJECT", string(circleJSON))
+			client.Do("DELHOOK", hookID)
 			client.Do("SETHOOK", hookID, hookURL, "WITHIN", detection.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
 
 			status = gin.H{"status": "Ok", "hook": hookID}
@@ -162,8 +164,9 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			respondWithError(c, http.StatusBadRequest, err)
 			return
 		}
-
+		client.Do("DEL", "HOOKS", hookID)
 		client.Do("SET", "HOOKS", hookID, "OBJECT", string(polygonJSON))
+		client.Do("DELHOOK", hookID)
 		client.Do("SETHOOK", hookID, hookURL, "WITHIN", codePlus.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
 
 		c.Writer.Header().Set("Content-Type", "application/json")
