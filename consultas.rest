@@ -28,7 +28,8 @@ Content-Type: application/json
     },
     "user_id": "test/120m4n",
     "unique_id": "abcd1234",
-    "fleet":"avatar"
+    "fleet":"avatar",
+    "avatar_ico":"https://icons.iconarchive.com/icons/iconarchive/fruit-soft-illustration/48/Apple-Yellow-icon.png"
 }
 
 ### avatar step 2 in

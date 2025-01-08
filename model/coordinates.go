@@ -9,6 +9,7 @@ type CoordinatesRequest struct {
 	UniqueID  string `json:"unique_id" binding:"required"`
 	Fleet     string `json:"fleet" binding:"required"`
 	FleetType string `json:"fleet_type"`
+	AvatarIco string `json:"avatar_ico"`
 }
 
 type CoordinatesResponse struct {

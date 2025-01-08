@@ -67,7 +67,7 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 
 		nc.Publish("coordinates", docJson)
 
-		client.Do("SET", "avatar", request.UniqueID, "FIELD", "user_id", request.UserID, "FIELD", "fleet", request.Fleet, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
+		client.Do("SET", "avatar", request.UniqueID, "FIELD", "user_id", request.UserID, "FIELD", "fleet", request.Fleet, "FIELD", "icon", request.AvatarIco, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
 		c.JSON(http.StatusOK, model.CoordinatesResponse{
 			Message: "Coordinates Inserted",
 			Status:  true,
