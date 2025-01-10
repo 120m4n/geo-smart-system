@@ -8,14 +8,16 @@ services:
       - NATS_ADDRESS=dev_nats_server
       - TILE38_ADDRESS=dev_tile38_server
       - SERVER_PORT=3002
-  nats_server:
+
+  dev_nats_server:
     image: nats:latest
     container_name: dev_nats_server
     ports:
       - 4222:4222
       - 6222:6222
       - 8222:8222
-  tile38_server:
+      
+  dev_tile38_server:
     image: tile38/tile38
     container_name: dev_tile38_server
     volumes:

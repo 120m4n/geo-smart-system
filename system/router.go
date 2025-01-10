@@ -170,7 +170,27 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 		client.Do("SETHOOK", hookID, hookURL, "WITHIN", codePlus.Type, "FENCE", "DETECT", trigger, "GET", "HOOKS", hookID)
 
 		c.Writer.Header().Set("Content-Type", "application/json")
-		c.JSON(http.StatusOK, gin.H{"status": "Ok", "hook": hookID})
+		c.JSON(http.StatusOK, gin.H{"status": "Ok", "hook": hookID, "action": "set"})
+	})
+
+	r.POST("/codeplus/del", func(c *gin.Context) {
+		var request struct {
+			HookID string `json:"hook_id" binding:"required"`
+		}
+		if err := c.ShouldBindJSON(&request); err != nil {
+			respondWithError(c, http.StatusBadRequest, err)
+			return
+		}
+
+		hookID := request.HookID
+
+		// Delete the hook from "HOOKS"
+		client.Do("DEL", "HOOKS", hookID)
+		// Delete the hook from "DELHOOK"
+		client.Do("DELHOOK", hookID)
+
+		c.Writer.Header().Set("Content-Type", "application/json")
+		c.JSON(http.StatusOK, gin.H{"status": "Ok", "hook": hookID, "action": "del"})
 	})
 
 	r.POST("/geofence/set", func(c *gin.Context) {

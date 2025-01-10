@@ -40,7 +40,7 @@ func main() {
 	go func() {
 		var sentWhenNull bool
 		for {
-			time.Sleep(time.Second * 1)
+			time.Sleep(time.Second * 5)
 			data, err := tile38.FromScan(client, "avatar")
 			if err != nil {
 				log.Printf("Error getting data: %v", err)

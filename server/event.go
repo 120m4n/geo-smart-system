@@ -45,14 +45,16 @@ func (stream *Event) listen() {
 			log.Printf("Client added. %d registered clients", len(stream.TotalClients))
 
 		case client := <-stream.ClosedClients:
-			delete(stream.TotalClients, client)
-			close(client)
-			log.Printf("Removed client. %d registered clients", len(stream.TotalClients))
+			if _, ok := stream.TotalClients[client]; ok {
+				delete(stream.TotalClients, client)
+				close(client)
+				log.Printf("Removed client. %d registered clients", len(stream.TotalClients))
+			}
 
 		case eventMsg := <-stream.Message:
 			failedClients := make([]chan string, 0)
 			for clientMessageChan := range stream.TotalClients {
-				select {	
+				select {
 				case clientMessageChan <- eventMsg:
 				default:
 					failedClients = append(failedClients, clientMessageChan)
@@ -60,9 +62,11 @@ func (stream *Event) listen() {
 			}
 			// Remove failed clients
 			for _, failedClient := range failedClients {
-				delete(stream.TotalClients, failedClient)
-				close(failedClient)
-				log.Printf("Removed client. %d registered clients", len(stream.TotalClients))
+				if _, ok := stream.TotalClients[failedClient]; ok {
+					delete(stream.TotalClients, failedClient)
+					close(failedClient)
+					log.Printf("Removed client. %d registered clients", len(stream.TotalClients))
+				}
 			}
 		}
 	}
