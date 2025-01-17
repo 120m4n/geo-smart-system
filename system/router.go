@@ -50,10 +50,15 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 			return
 		}
 
+		fleet := request.Fleet
+		if fleet == "" {
+			fleet = "avatar"
+		}
+
 		doc := model.Document{
 			UniqueId:     request.UniqueID,
 			UserId:       request.UserID,
-			Fleet:        request.Fleet,
+			Fleet:        fleet,
 			Location:     model.MongoLocation{Type: "Point", Coordinates: []float64{request.Coordinates.Longitude, request.Coordinates.Latitude}},
 			OriginIp:     c.ClientIP(),
 			LastModified: time.Now().Unix(),
@@ -67,7 +72,8 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 
 		nc.Publish("coordinates", docJson)
 
-		client.Do("SET", "avatar", request.UniqueID, "FIELD", "user_id", request.UserID, "FIELD", "fleet", request.Fleet, "FIELD", "icon", request.AvatarIco, "EX", 30, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
+		// se mantiene fleet a avatar por defecto para que sean enviadas las coordenadas a la capa de visualización
+		client.Do("SET", "avatar", request.UniqueID, "FIELD", "user_id", request.UserID, "FIELD", "fleet", request.Fleet, "FIELD", "icon", request.AvatarIco, "EX", 90, "POINT", request.Coordinates.Latitude, request.Coordinates.Longitude)
 		c.JSON(http.StatusOK, model.CoordinatesResponse{
 			Message: "Coordinates Inserted",
 			Status:  true,
