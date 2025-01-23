@@ -1,6 +1,8 @@
 services:
   server:
-    image: geo-smart-system-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: geo_server
     ports:
       - 3002:3002

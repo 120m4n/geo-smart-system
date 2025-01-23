@@ -1,15 +1,9 @@
 services:
   server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: electrosoftware/geosmartsystem:latest
     container_name: geo_server
     ports:
       - 3002:3002
-    # volumes:
-    #   - ./public:/public
-    networks:
-      - network_geosmartsystem
     environment:
       - GIN_MODE=release
       - SERVER_ADDRESS=server
@@ -19,15 +13,13 @@ services:
       - NATS_ADDRESS=nats_server
     depends_on:
       - tile38_server
+      - nats_server
   tile38_server:
     image: tile38/tile38
     container_name: tile38_server
-    ports:
-      - 9851:9851
-    # volumes:
-    #   - tile38-data:/data
-    networks:
-      - network_geosmartsystem
+    volumes:
+      - tile38-data:/data
+
     command: ["tile38-server", "-d", "/data"]
     healthcheck:
       test: ["CMD", "tile38-cli", "ping"]
@@ -41,8 +33,9 @@ services:
       - 4222:4222
       - 6222:6222
       - 8222:8222
-    networks:
-      - network_geosmartsystem   
+volumes:
+  tile38-data:   
 networks:
-  network_geosmartsystem:
+  default:
     external: true
+    name: scoobydoo
