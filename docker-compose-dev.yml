@@ -10,6 +10,8 @@ services:
       - NATS_ADDRESS=dev_nats_server
       - TILE38_ADDRESS=dev_tile38_server
       - SERVER_PORT=3002
+    depends_on:
+      - dev_nats_server
 
   dev_nats_server:
     image: nats:latest
@@ -32,5 +34,23 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+  dev_coordinates_worker:
+    image: electrosoftware/coordinates_worker:latest
+    container_name: dev_coordinates_worker
+    environment:
+      - NATS_URL=nats://dev_nats_server:4222
+      - MONGO_URI=mongodb://root:example@dev_mongo_server:27017
+  dev_mongo_server:
+    image: mongo
+    container_name: dev_mongo_server
+    restart: always    
+    ports:
+      - 27017:27017
+    volumes:
+      - dev-mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example    
 volumes:
   dev-tile38-data:
+  dev-mongo-data:
