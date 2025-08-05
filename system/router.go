@@ -280,6 +280,30 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 		c.File("./public/app.html")
 	})
 
+	// Serve index.html at /app.html path
+	r.GET("/index.html", func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
+
+	// Serve app.html at /app.html path
+	r.GET("/logout.html", func(c *gin.Context) {
+		c.File("./public/logout.html")
+	})
+
+	// ...existing code...
+
+	r.GET("/.well-known/appspecific/com.chrome.devtools.json", func(c *gin.Context) {
+		// Respuesta para Chrome DevTools
+		c.JSON(http.StatusOK, gin.H{
+			"type":                 "node",
+			"description":          "Geo Smart System Debug",
+			"devtoolsFrontendUrl":  "/devtools/inspector.html",
+			"webSocketDebuggerUrl": "ws://localhost:8080/ws",
+		})
+	})
+
+	// ...existing code...
+
 	r.Static("/public", "./public")
 	r.Static("/assets", "./assets")
 }

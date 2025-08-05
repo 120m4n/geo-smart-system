@@ -23,8 +23,23 @@ Content-Type: application/json
 
 {
     "coordinates": { 
-        "latitude" : 7.131354518128816,
+        "latitude" : 7.127614,
         "longitude" : -73.11778878718832
+    },
+    "user_id": "test/120m4n",
+    "unique_id": "abcd1234",
+    "fleet":"avatar",
+    "avatar_ico":"https://icons.iconarchive.com/icons/iconarchive/fruit-soft-illustration/48/Apple-Yellow-icon.png"
+}
+
+### user in
+POST  {{server}}/coordinates HTTP/1.1
+Content-Type: application/json
+
+{
+    "coordinates": { 
+        "latitude" : 7.1267188,
+        "longitude" : -73.119804
     },
     "user_id": "test/120m4n",
     "unique_id": "abcd1234",
@@ -104,7 +119,7 @@ Content-Type: application/json
 
 {
     "type": "avatar",
-    "code_plus":"67V84VJJ+",
+    "code_plus":"67M5CFW8+",
     "trigger" : ["enter", "exit"]
 }
 
