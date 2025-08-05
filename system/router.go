@@ -270,6 +270,16 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 		websocketHandler(c.Writer, c.Request)
 	})
 
+	// Serve the main page at root path
+	r.GET("/", func(c *gin.Context) {
+		c.File("./public/index.html")
+	})
+
+	// Serve app.html at /app.html path
+	r.GET("/app.html", func(c *gin.Context) {
+		c.File("./public/app.html")
+	})
+
 	r.Static("/public", "./public")
 	r.Static("/assets", "./assets")
 }

@@ -1,4 +1,4 @@
-@server=http://localhost:3002
+@server=http://geofences.mapas-electrosoftware.xyz:3002
 
 ### get unique id
 # @name requestID
