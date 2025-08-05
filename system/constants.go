@@ -6,11 +6,11 @@ import (
 )
 
 var (
-	Tile38Address = getEnv("TILE38_ADDRESS", "127.0.0.1")
+	Tile38Address = getEnv("TILE38_ADDRESS", "localhost")
 	Tile38Port    = getEnv("TILE38_PORT", "9851")
-	ServerAddress = getEnv("SERVER_ADDRESS", "127.0.0.1")
+	ServerAddress = getEnv("SERVER_ADDRESS", "0.0.0.0") // Para escuchar en todas las interfaces
 	ServerPort    = getEnv("SERVER_PORT", "3002")
-	NatsAddress   = getEnv("NATS_ADDRESS", "127.0.0.1")
+	NatsAddress   = getEnv("NATS_ADDRESS", "localhost")
 )
 
 func getEnv(key, defaultValue string) string {

@@ -9,6 +9,7 @@ services:
     environment:
       - NATS_ADDRESS=dev_nats_server
       - TILE38_ADDRESS=dev_tile38_server
+      - SERVER_ADDRESS=192.168.1.95
       - SERVER_PORT=3002
     depends_on:
       - dev_nats_server
