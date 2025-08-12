@@ -253,6 +253,30 @@ func Router(r *gin.Engine, client *redis.Client, event *server.Event, nc *nats.C
 				return
 			}
 
+			// Crear documento estructurado para NATS
+			hookEvent := map[string]interface{}{
+				"event_type":   "hook_triggered",
+				"hook_id":      hookID,
+				"timestamp":    time.Now().Unix(),
+				"client_ip":    c.ClientIP(),
+				"user_agent":   c.GetHeader("User-Agent"),
+				"request_data": request,
+				"metadata": map[string]interface{}{
+					"source":    "detection_call_endpoint",
+					"version":   "1.0",
+					"processed": time.Now().Format(time.RFC3339),
+				},
+			}
+
+			// Convertir a JSON para NATS
+			hookEventJson, err := json.Marshal(hookEvent)
+			if err != nil {
+				log.Printf("Failed to marshal hook event: %v", err)
+			} else {
+				// Publicar evento a NATS
+				nc.Publish("hooks", hookEventJson)
+			}
+
 			requestJson, err := json.Marshal(request)
 			if err != nil {
 				log.Print("Failed to convert request to JSON")
